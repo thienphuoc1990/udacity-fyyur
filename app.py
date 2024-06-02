@@ -223,9 +223,17 @@ def create_venue_form():
 
 @app.route('/venues/create', methods=['POST'])
 def create_venue_submission():
-  form = VenueForm()
+  form = VenueForm(meta={'csrf': False})
   # DONE: insert form data as a new Venue record in the db, instead
   # DONE: modify data to be the data object returned from db insertion
+  if not form.validate():
+    message = []
+    for field, errors in form.errors.items():
+      for error in errors:
+        message.append(f"{field}: {error}")
+    flash('Please fix the following errors: ' + ', '.join(message))
+    return render_template('forms/new_venue.html', form=form)
+
   try:
     venue = Venue(
       name = form.name.data,
@@ -348,6 +356,7 @@ def edit_artist_submission(artist_id):
 @app.route('/venues/<int:venue_id>/edit', methods=['GET'])
 def edit_venue(venue_id):
   venue = Venue.query.get_or_404(venue_id)
+  venue.genres = json.loads(venue.genres) if venue.genres else []
   form = VenueForm(obj=venue)
   # DONE: populate form with values from venue with ID <venue_id>
   return render_template('forms/edit_venue.html', form=form, venue=venue)
@@ -357,7 +366,15 @@ def edit_venue_submission(venue_id):
   # DONE: take values from the form submitted, and update existing
   # venue record with ID <venue_id> using the new attributes
   venue = Venue.query.get_or_404(venue_id)
-  form = VenueForm()
+  form = VenueForm(meta={'csrf': False})
+
+  if not form.validate():
+    message = []
+    for field, errors in form.errors.items():
+      for error in errors:
+        message.append(f"{field}: {error}")
+    flash('Please fix the following errors: ' + ', '.join(message))
+    return render_template('forms/edit_venue.html', form=form, venue=venue)
 
   try:
     form.populate_obj(venue)
@@ -367,6 +384,7 @@ def edit_venue_submission(venue_id):
   except SQLAlchemyError:
     db.session.rollback()
     flash('An error occurred. Venue ' + venue.name + ' could not updated.')
+    return render_template('forms/edit_venue.html', form=form, venue=venue)
   finally:
     db.session.close()
   return redirect(url_for('show_venue', venue_id=venue_id))
