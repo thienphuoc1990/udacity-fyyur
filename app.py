@@ -470,6 +470,16 @@ def server_error(error):
     return render_template('errors/500.html'), 500
 
 
+@app.errorhandler(400)
+def bad_request_error(error):
+    return render_template('errors/400.html'), 400
+
+
+@app.errorhandler(409)
+def dupplicate_resource_error(error):
+    return render_template('errors/409.html'), 409
+
+
 if not app.debug:
     file_handler = FileHandler('error.log')
     file_handler.setFormatter(Formatter(
