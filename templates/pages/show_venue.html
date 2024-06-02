@@ -76,6 +76,23 @@
 </section>
 
 <a href="/venues/{{ venue.id }}/edit"><button class="btn btn-primary btn-lg">Edit</button></a>
+<button class="btn btn-secondary btn-lg" onclick="deleteVenue('{{venue.id}}')">Delete</button>
 
 {% endblock %}
 
+
+{% block page_script %}
+<script>
+	function deleteVenue(venue_id) {
+    	$.ajax({
+			url: '/venues/' + venue_id,
+			type: 'DELETE',
+			success: function(result) {
+				if (result.status == 200) {
+					window.location = '/';
+				}
+			}
+		});
+	}
+</script>
+{% endblock %}
