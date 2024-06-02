@@ -100,8 +100,7 @@ def venues():
   for l in [row.as_dict() for row in Venue.query.all()]:
       d.setdefault((l['city'], l['state']), list()).append({'id': l['id'], 'name': l['name']})
 
-  data = [{'city': k[0], 'state': k[1], 'venues': v.pop() if len(v) == 1 else v} 
-      for k, v in d.items()]   
+  data = [{'city': k[0], 'state': k[1], 'venues': v} for k, v in d.items()]   
 
   # data=[{
   #   "city": "San Francisco",
