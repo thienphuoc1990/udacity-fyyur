@@ -32,6 +32,7 @@ class Venue(db.Model):
     website_link = db.Column(db.String(120))
     seeking_talent = db.Column(db.Boolean, default=False)
     seeking_description = db.Column(db.String(500))
+    created_date = db.Column(db.DateTime)
     shows = db.relationship(
         'Show',
         backref='Venue',
@@ -111,6 +112,7 @@ class Artist(db.Model):
     website_link = db.Column(db.String(120))
     seeking_venue = db.Column(db.Boolean, default=False)
     seeking_description = db.Column(db.String(500))
+    created_date = db.Column(db.DateTime)
     shows = db.relationship(
         'Show',
         backref='Artist',

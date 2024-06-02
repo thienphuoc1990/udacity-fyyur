@@ -5,10 +5,19 @@
 import json
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, flash, redirect, url_for
+from flask import (
+    Flask,
+    render_template,
+    request,
+    flash,
+    redirect,
+    url_for
+)
 from flask_moment import Moment
 import logging
 from logging import Formatter, FileHandler
+
+from sqlalchemy import desc
 from forms import *
 from sqlalchemy.exc import SQLAlchemyError
 from collections import OrderedDict
@@ -47,7 +56,9 @@ app.jinja_env.filters['datetime'] = format_datetime
 
 @app.route('/')
 def index():
-    return render_template('pages/home.html')
+    venues = Venue.query.order_by(desc(Venue.created_date)).limit(10).all()
+    artists = Artist.query.order_by(desc(Artist.created_date)).limit(10).all()
+    return render_template('pages/home.html', venues=venues, artists=artists)
 
 
 #  Venues
