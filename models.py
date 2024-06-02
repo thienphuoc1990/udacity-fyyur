@@ -44,29 +44,6 @@ class Venue(db.Model):
             Show.venue_id == self.id,
             Show.start_time > datetime.now()) .count()
 
-    def parse_shows(self):
-        self.past_shows = []
-        self.upcoming_shows = []
-        if self.shows:
-            now = datetime.now()
-            for show in self.shows:
-                if show.start_time <= now:
-                    self.past_shows.append({
-                        'start_time': str(show.start_time),
-                        'artist_id': show.Artist.id,
-                        'artist_name': show.Artist.name,
-                        'artist_image_link': show.Artist.image_link,
-                    })
-                else:
-                    self.upcoming_shows.append({
-                        'start_time': str(show.start_time),
-                        'artist_id': show.Artist.id,
-                        'artist_name': show.Artist.name,
-                        'artist_image_link': show.Artist.image_link,
-                    })
-        self.past_shows_count = len(self.past_shows)
-        self.upcoming_shows_count = len(self.upcoming_shows)
-
     def query_shows(self):
         now = datetime.now()
         upcoming_shows = db.session.query(Show, Artist).join(Artist)\
@@ -123,29 +100,6 @@ class Artist(db.Model):
         return db.session.query(Show) .filter(
             Show.artist_id == self.id,
             Show.start_time > datetime.now()) .count()
-
-    def parse_shows(self):
-        self.past_shows = []
-        self.upcoming_shows = []
-        if self.shows:
-            now = datetime.now()
-            for show in self.shows:
-                if show.start_time <= now:
-                    self.past_shows.append({
-                        'start_time': str(show.start_time),
-                        'venue_id': show.Venue.id,
-                        'venue_name': show.Venue.name,
-                        'venue_image_link': show.Venue.image_link,
-                    })
-                else:
-                    self.upcoming_shows.append({
-                        'start_time': str(show.start_time),
-                        'venue_id': show.Venue.id,
-                        'venue_name': show.Venue.name,
-                        'venue_image_link': show.Venue.image_link,
-                    })
-        self.past_shows_count = len(self.past_shows)
-        self.upcoming_shows_count = len(self.upcoming_shows)
 
     def query_shows(self):
         now = datetime.now()

@@ -6,10 +6,10 @@ from enums import States, Genres
 
 facebook_url_regex = r'(?:(?:http|https):\/\/)?(?:www.)?(facebook|fb).com?'
 
+
 def validate_phone(form, field):
     if len(field.data) < 10:
         raise ValidationError('Invalid phone number.')
-
 
 
 class ShowForm(Form):
