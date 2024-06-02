@@ -111,35 +111,23 @@ def index():
 @app.route('/venues')
 def venues():
   # DONE: replace with real venues data.
-  # TODO: num_upcoming_shows should be aggregated based on number of upcoming shows per venue.
-  
+  # DONE: num_upcoming_shows should be aggregated based on number of upcoming shows per venue.
+  venues = Venue.query.all()
   d = OrderedDict()
-  for l in [row.as_dict() for row in Venue.query.all()]:
-      d.setdefault((l['city'], l['state']), list()).append({'id': l['id'], 'name': l['name']})
-
+  for venue in venues:
+    num_upcoming_shows = 0
+    if venue.shows:
+      for show in venue.shows:
+        if show.start_time > datetime.now():
+          num_upcoming_shows += 1
+       
+    d.setdefault((venue.city, venue.state), list()).append({
+      'id': venue.id,
+      'name': venue.name,
+      'num_upcoming_shows': num_upcoming_shows
+    })
   data = [{'city': k[0], 'state': k[1], 'venues': v} for k, v in d.items()]   
-
-  # data=[{
-  #   "city": "San Francisco",
-  #   "state": "CA",
-  #   "venues": [{
-  #     "id": 1,
-  #     "name": "The Musical Hop",
-  #     "num_upcoming_shows": 0,
-  #   }, {
-  #     "id": 3,
-  #     "name": "Park Square Live Music & Coffee",
-  #     "num_upcoming_shows": 1,
-  #   }]
-  # }, {
-  #   "city": "New York",
-  #   "state": "NY",
-  #   "venues": [{
-  #     "id": 2,
-  #     "name": "The Dueling Pianos Bar",
-  #     "num_upcoming_shows": 0,
-  #   }]
-  # }]
+  
   return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
