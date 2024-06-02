@@ -4,8 +4,12 @@ from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField
 from wtforms.validators import DataRequired, ValidationError, URL, Regexp
 from enums import States, Genres
 
-phone_regex = r'^\d{3}-\d{3}-\d{4}$'
 facebook_url_regex = r'(?:(?:http|https):\/\/)?(?:www.)?(facebook|fb).com?'
+
+def validate_phone(form, field):
+    if len(field.data) < 10:
+        raise ValidationError('Invalid phone number.')
+
 
 
 class ShowForm(Form):
@@ -38,11 +42,7 @@ class VenueForm(Form):
     )
     phone = StringField(
         'phone',
-        validators=[
-            Regexp(
-                phone_regex,
-                0,
-                message="Invalid phone number format.")])
+        validators=[validate_phone])
     image_link = StringField(
         'image_link'
     )
@@ -83,7 +83,7 @@ class ArtistForm(Form):
     )
     phone = StringField(
         # DONE implement validation logic for phone
-        'phone', validators=[Regexp(phone_regex, 0, message="Invalid phone number format.")]
+        'phone', validators=[validate_phone]
     )
     image_link = StringField(
         'image_link'
