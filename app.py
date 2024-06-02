@@ -99,6 +99,15 @@ class Artist(db.Model):
     seeking_description = db.Column(db.String(500))
     shows = db.relationship('Show', backref='Artist', lazy='joined', cascade='all, delete')
 
+    def num_upcoming_shows(self):
+      num_upcoming_shows = 0
+      if self.shows:
+        for show in self.shows:
+          if show.start_time > datetime.now():
+            num_upcoming_shows += 1
+
+      return num_upcoming_shows
+
     # DONE: implement any missing fields, as a database migration using Flask-Migrate
 
 # DONE Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
@@ -259,18 +268,20 @@ def artists():
 
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
-  # TODO: implement search on artists with partial string search. Ensure it is case-insensitive.
+  # DONE: implement search on artists with partial string search. Ensure it is case-insensitive.
   # seach for "A" should return "Guns N Petals", "Matt Quevado", and "The Wild Sax Band".
   # search for "band" should return "The Wild Sax Band".
+  search_term = request.form.get('search_term', '')
+  artists = Artist.query.filter(Artist.name.ilike(f'%{search_term}%')).all()
   response={
-    "count": 1,
+    "count": len(artists),
     "data": [{
-      "id": 4,
-      "name": "Guns N Petals",
-      "num_upcoming_shows": 0,
-    }]
+      'id': artist.id,
+      'name': artist.name,
+      'num_upcoming_shows': artist.num_upcoming_shows(),
+    } for artist in artists]
   }
-  return render_template('pages/search_artists.html', results=response, search_term=request.form.get('search_term', ''))
+  return render_template('pages/search_artists.html', results=response, search_term=search_term)
 
 @app.route('/artists/<int:artist_id>')
 def show_artist(artist_id):
