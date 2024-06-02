@@ -207,7 +207,7 @@ def search_venues():
 def show_venue(venue_id):
   # shows the venue page with the given venue_id
   # DONE: replace with real venue data from the venues table, using venue_id
-  data = Venue.query.get(venue_id)
+  data = Venue.query.get_or_404(venue_id)
   data.genres = json.loads(data.genres) if data.genres else []
   data.parse_shows()
 
@@ -310,7 +310,7 @@ def search_artists():
 def show_artist(artist_id):
   # shows the artist page with the given artist_id
   # DONE: replace with real artist data from the artist table, using artist_id
-  data = Artist.query.get(artist_id)
+  data = Artist.query.get_or_404(artist_id)
   data.genres = json.loads(data.genres) if data.genres else []
   data.parse_shows()
 
