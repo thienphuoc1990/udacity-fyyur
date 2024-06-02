@@ -3,6 +3,7 @@
 # ----------------------------------------------------------------------------#
 
 import json
+import sys
 import dateutil.parser
 import babel
 from flask import (
@@ -161,6 +162,7 @@ def create_venue_submission():
         # DONE: on unsuccessful db insert, flash an error instead.
         # e.g., flash('An error occurred. Venue ' + data.name + ' could not be
         # listed.')
+        print(sys.exc_info())
         db.session.rollback()
         flash(
             'An error occurred. Venue ' +
@@ -190,6 +192,7 @@ def delete_venue(venue_id):
         db.session.commit()
         result['message'] = 'Venue was successfully deleted!'
     except Exception as e:
+        print(sys.exc_info())
         db.session.rollback()
         result['status'] = 500
         result['message'] = 'An error occurred. Venue could not be deleted.'
@@ -281,6 +284,7 @@ def edit_artist_submission(artist_id):
         db.session.commit()
         flash('Artist ' + artist.name + ' was successfully updated!')
     except SQLAlchemyError:
+        print(sys.exc_info())
         db.session.rollback()
         flash(
             'An error occurred. Artist ' +
@@ -326,6 +330,7 @@ def edit_venue_submission(venue_id):
         db.session.commit()
         flash('Venue ' + venue.name + ' was successfully updated!')
     except SQLAlchemyError:
+        print(sys.exc_info())
         db.session.rollback()
         flash('An error occurred. Venue ' + venue.name + ' could not updated.')
         return render_template('forms/edit_venue.html', form=form, venue=venue)
@@ -377,6 +382,7 @@ def create_artist_submission():
         flash('Artist ' + artist.name + ' was successfully listed!')
     except SQLAlchemyError as e:
         # DONE: on unsuccessful db insert, flash an error instead.
+        print(sys.exc_info())
         db.session.rollback()
         flash(
             'An error occurred. Artist ' +
@@ -444,6 +450,7 @@ def create_show_submission():
     except SQLAlchemyError:
         # DONE: on unsuccessful db insert, flash an error instead.
         # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+        print(sys.exc_info())
         flash('An error occurred. Show could not be listed.')
         db.session.rollback()
         return render_template('forms/new_show.html', form=form)
