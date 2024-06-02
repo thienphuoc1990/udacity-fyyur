@@ -329,6 +329,7 @@ def show_artist(artist_id):
 @app.route('/artists/<int:artist_id>/edit', methods=['GET'])
 def edit_artist(artist_id):
   artist = Artist.query.get_or_404(artist_id)
+  artist.genres = json.loads(artist.genres) if artist.genres else []
   form = ArtistForm(obj=artist)
   # DONE: populate form with fields from artist with ID <artist_id>
   return render_template('forms/edit_artist.html', form=form, artist=artist)
@@ -338,7 +339,15 @@ def edit_artist_submission(artist_id):
   # DONE: take values from the form submitted, and update existing
   # artist record with ID <artist_id> using the new attributes
   artist = Artist.query.get_or_404(artist_id)
-  form = ArtistForm()
+  form = ArtistForm(meta={'csrf': False})
+
+  if not form.validate():
+    message = []
+    for field, errors in form.errors.items():
+      for error in errors:
+        message.append(f"{field}: {error}")
+    flash('Please fix the following errors: ' + ', '.join(message))
+    return render_template('forms/edit_artist.html', form=form, artist=artist)
 
   try:
     form.populate_obj(artist)
@@ -348,6 +357,7 @@ def edit_artist_submission(artist_id):
   except SQLAlchemyError:
     db.session.rollback()
     flash('An error occurred. Artist ' + artist.name + ' could not updated.')
+    return render_template('forms/edit_artist.html', form=form, artist=artist)
   finally:
     db.session.close()
 
@@ -400,9 +410,17 @@ def create_artist_form():
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
   # called upon submitting the new artist listing form
-  form = ArtistForm()
+  form = ArtistForm(meta={'csrf': False})
   # DONE: insert form data as a new Venue record in the db, instead
   # DONE: modify data to be the data object returned from db insertion
+  if not form.validate():
+    message = []
+    for field, errors in form.errors.items():
+      for error in errors:
+        message.append(f"{field}: {error}")
+    flash('Please fix the following errors: ' + ', '.join(message))
+    return render_template('forms/new_artist.html', form=form)
+  
   try:
     artist = Artist(
       name = form.name.data,
@@ -425,6 +443,7 @@ def create_artist_submission():
     # DONE: on unsuccessful db insert, flash an error instead.
     db.session.rollback()
     flash('An error occurred. Artist ' + form.name.data + ' could not be listed.')
+    return render_template('forms/new_artist.html', form=form)
   finally:
     db.session.close()
 
