@@ -7,6 +7,7 @@ from enums import States, Genres
 phone_regex = r'^\d{3}-\d{3}-\d{4}$'
 facebook_url_regex = r'(?:(?:http|https):\/\/)?(?:www.)?(facebook|fb).com?'
 
+
 class ShowForm(Form):
     artist_id = StringField(
         'artist_id'
@@ -17,8 +18,9 @@ class ShowForm(Form):
     start_time = DateTimeField(
         'start_time',
         validators=[DataRequired()],
-        default= datetime.today()
+        default=datetime.today()
     )
+
 
 class VenueForm(Form):
     name = StringField(
@@ -35,8 +37,12 @@ class VenueForm(Form):
         'address', validators=[DataRequired()]
     )
     phone = StringField(
-        'phone', validators=[Regexp(phone_regex, 0, message="Invalid phone number format.")]
-    )
+        'phone',
+        validators=[
+            Regexp(
+                phone_regex,
+                0,
+                message="Invalid phone number format.")])
     image_link = StringField(
         'image_link'
     )
@@ -46,18 +52,22 @@ class VenueForm(Form):
         choices=Genres.items()
     )
     facebook_link = StringField(
-        'facebook_link', validators=[URL(), Regexp(facebook_url_regex, 0, message="Invalid facebook URL format.")]
-    )
+        'facebook_link',
+        validators=[
+            URL(),
+            Regexp(
+                facebook_url_regex,
+                0,
+                message="Invalid facebook URL format.")])
     website_link = StringField(
         'website_link'
     )
 
-    seeking_talent = BooleanField( 'seeking_talent' )
+    seeking_talent = BooleanField('seeking_talent')
 
     seeking_description = StringField(
         'seeking_description'
     )
-
 
 
 class ArtistForm(Form):
@@ -72,7 +82,7 @@ class ArtistForm(Form):
         choices=States.items()
     )
     phone = StringField(
-        # DONE implement validation logic for phone 
+        # DONE implement validation logic for phone
         'phone', validators=[Regexp(phone_regex, 0, message="Invalid phone number format.")]
     )
     image_link = StringField(
@@ -81,19 +91,19 @@ class ArtistForm(Form):
     genres = SelectMultipleField(
         'genres', validators=[DataRequired()],
         choices=Genres.items()
-     )
+    )
     facebook_link = StringField(
-        # DONE implement enum restriction (I guess this for validate facebook url)
+        # DONE implement enum restriction (I guess this for validate facebook
+        # url)
         'facebook_link', validators=[URL(), Regexp(facebook_url_regex, 0, message="Invalid facebook URL format.")]
-     )
+    )
 
     website_link = StringField(
         'website_link'
-     )
+    )
 
-    seeking_venue = BooleanField( 'seeking_venue' )
+    seeking_venue = BooleanField('seeking_venue')
 
     seeking_description = StringField(
-            'seeking_description'
-     )
-
+        'seeking_description'
+    )

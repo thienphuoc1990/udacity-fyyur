@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Genres(Enum):
     Alternative = 'Alternative'
     Blues = 'Blues'
@@ -24,6 +25,7 @@ class Genres(Enum):
     @classmethod
     def items(cls):
         return [(item.name, item.value) for item in cls]
+
 
 class States(Enum):
     AL = 'AL'
