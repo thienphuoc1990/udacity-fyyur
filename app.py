@@ -100,7 +100,7 @@ def show_venue(venue_id):
     # DONE: replace with real venue data from the venues table, using venue_id
     data = Venue.query.get_or_404(venue_id)
     data.genres = json.loads(data.genres) if data.genres else []
-    data.parse_shows()
+    data.query_shows()
 
     return render_template('pages/show_venue.html', venue=data)
 
@@ -229,7 +229,7 @@ def show_artist(artist_id):
     # artist_id
     data = Artist.query.get_or_404(artist_id)
     data.genres = json.loads(data.genres) if data.genres else []
-    data.parse_shows()
+    data.query_shows()
 
     return render_template('pages/show_artist.html', artist=data)
 
@@ -364,7 +364,7 @@ def create_artist_submission():
         db.session.commit()
         # on successful db insert, flash success
         flash('Artist ' + artist.name + ' was successfully listed!')
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
         # DONE: on unsuccessful db insert, flash an error instead.
         db.session.rollback()
         flash(
