@@ -49,8 +49,14 @@ class Venue(db.Model):
     seeking_description = db.Column(db.String(500))
     shows = db.relationship('Show', backref='Venue', lazy='joined', cascade='all, delete')
 
-    def as_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    def num_upcoming_shows(self):
+      num_upcoming_shows = 0
+      if self.shows:
+        for show in self.shows:
+          if show.start_time > datetime.now():
+            num_upcoming_shows += 1
+
+      return num_upcoming_shows
 
     # DONE: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -115,35 +121,32 @@ def venues():
   venues = Venue.query.all()
   d = OrderedDict()
   for venue in venues:
-    num_upcoming_shows = 0
-    if venue.shows:
-      for show in venue.shows:
-        if show.start_time > datetime.now():
-          num_upcoming_shows += 1
-       
     d.setdefault((venue.city, venue.state), list()).append({
       'id': venue.id,
       'name': venue.name,
-      'num_upcoming_shows': num_upcoming_shows
+      'num_upcoming_shows': venue.num_upcoming_shows()
     })
   data = [{'city': k[0], 'state': k[1], 'venues': v} for k, v in d.items()]   
-  
+
   return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  # TODO: implement search on venues with partial string search. Ensure it is case-insensitive.
+  # DONE: implement search on venues with partial string search. Ensure it is case-insensitive.
   # seach for Hop should return "The Musical Hop".
   # search for "Music" should return "The Musical Hop" and "Park Square Live Music & Coffee"
+  search_term = request.form.get('search_term', '')
+  venues = Venue.query.filter(Venue.name.ilike(f'%{search_term}%')).all()
   response={
-    "count": 1,
+    "count": len(venues),
     "data": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
+      'id': venue.id,
+      'name': venue.name,
+      'num_upcoming_shows': venue.num_upcoming_shows(),
+    } for venue in venues]
   }
-  return render_template('pages/search_venues.html', results=response, search_term=request.form.get('search_term', ''))
+
+  return render_template('pages/search_venues.html', results=response, search_term=search_term)
 
 @app.route('/venues/<int:venue_id>')
 def show_venue(venue_id):
