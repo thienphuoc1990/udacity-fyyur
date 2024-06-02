@@ -213,7 +213,6 @@ def create_venue_submission():
     db.session.commit()
     # on successful db insert, flash success
     flash('Venue ' + venue.name + ' was successfully listed!')
-    return redirect(url_for('venues'))
   except SQLAlchemyError:
     # DONE: on unsuccessful db insert, flash an error instead.
     # e.g., flash('An error occurred. Venue ' + data.name + ' could not be listed.')
@@ -441,11 +440,10 @@ def create_artist_submission():
     db.session.commit()
     # on successful db insert, flash success
     flash('Artist ' + artist.name + ' was successfully listed!')
-    return redirect(url_for('artists'))
   except SQLAlchemyError:
     # DONE: on unsuccessful db insert, flash an error instead.
-    flash('An error occurred. Artist ' + form.name.data + ' could not be listed.')
     db.session.rollback()
+    flash('An error occurred. Artist ' + form.name.data + ' could not be listed.')
   finally:
     db.session.close()
 
@@ -493,7 +491,6 @@ def create_show_submission():
     db.session.commit()
     # on successful db insert, flash success
     flash('Show was successfully listed!')
-    return redirect(url_for('shows'))
   except SQLAlchemyError:
     # DONE: on unsuccessful db insert, flash an error instead.
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
