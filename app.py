@@ -479,7 +479,16 @@ def create_shows():
 def create_show_submission():
   # called to create new shows in the db, upon submitting new show listing form
   # DONE: insert form data as a new Show record in the db, instead
-  form = ShowForm()
+  form = ShowForm(meta={'csrf': False})
+  
+  if not form.validate():
+    message = []
+    for field, errors in form.errors.items():
+      for error in errors:
+        message.append(f"{field}: {error}")
+    flash('Please fix the following errors: ' + ', '.join(message))
+    return render_template('forms/new_show.html', form=form)
+  
   try:
     show = Show(
       artist_id = form.artist_id.data,
@@ -496,6 +505,7 @@ def create_show_submission():
     # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
     flash('An error occurred. Show could not be listed.')
     db.session.rollback()
+    return render_template('forms/new_show.html', form=form)
   finally:
     db.session.close()
 
